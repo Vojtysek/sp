@@ -1,6 +1,12 @@
 import { useState } from "react";
 import type { Todo } from "@/api/todoApi";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,11 +33,17 @@ interface TodoItemProps {
     todo: Todo;
     onToggle: (id: string, done: boolean) => void;
     onDelete: (id: string) => void;
-    onEdit?: (id: string, title: string, description: string, tags: string[]) => Promise<void>;
+    onEdit?: (
+        id: string,
+        title: string,
+        description: string,
+        tags: string[]
+    ) => Promise<void>;
 }
 
 const textStyles = {
-    title: "text-base font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+    title:
+        "text-base font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
     completed: "line-through text-muted-foreground",
 };
 
@@ -46,7 +58,11 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
     };
     const handleToggle = (checked: boolean) => onToggle(todo.id, checked);
 
-    const handleEditSubmit = async (title: string, description: string, tags: string[]) => {
+    const handleEditSubmit = async (
+        title: string,
+        description: string,
+        tags: string[]
+    ) => {
         if (onEdit) {
             setIsEditing(true);
             try {
@@ -62,33 +78,49 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
 
     return (
         <>
-            <Card 
-                className="group flex flex-col justify-between border-l-4 border-l-primary/0 animate-in fade-in zoom-in-95 transition-all duration-300 hover:border-l-primary hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+            <Card
+                className="group flex flex-row justify-between border-l-4 border-l-primary/0 animate-in fade-in zoom-in-95 transition-all duration-300 hover:border-l-primary hover:shadow-lg hover:-translate-y-1 cursor-pointer"
                 onClick={() => setEditOpen(true)}
             >
-                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                    <div className="flex items-center gap-2 flex-1">
-                        <Checkbox
-                            id={`todo-${todo.id}`}
-                            checked={todo.done}
-                            onCheckedChange={handleToggle}
-                            onClick={(e) => e.stopPropagation()}
-                        />
-                        <label htmlFor={`todo-${todo.id}`} className="flex-1" onClick={(e) => e.stopPropagation()}>
-                            <CardTitle className={cn(textStyles.title, todo.done && textStyles.completed)}>
-                                {todo.title}
-                            </CardTitle>
-                        </label>
-                    </div>
-                </CardHeader>
-                {todo.description && (
-                    <CardContent className="pt-0">
-                        <p className={cn("text-sm text-muted-foreground", todo.done && textStyles.completed)}>
-                            {todo.description}
-                        </p>
-                    </CardContent>
-                )}
-                <CardFooter className="justify-end pt-2">
+                <div className="flex justify-center gap-2 flex-col">
+                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                        <div className="flex items-center gap-2 flex-1">
+                            <Checkbox
+                                id={`todo-${todo.id}`}
+                                checked={todo.done}
+                                onCheckedChange={handleToggle}
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                            <label
+                                htmlFor={`todo-${todo.id}`}
+                                className="flex-1"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <CardTitle
+                                    className={cn(
+                                        textStyles.title,
+                                        todo.done && textStyles.completed
+                                    )}
+                                >
+                                    {todo.title}
+                                </CardTitle>
+                            </label>
+                        </div>
+                    </CardHeader>
+                    {todo.description && (
+                        <CardContent className="pt-0">
+                            <p
+                                className={cn(
+                                    "text-sm text-muted-foreground",
+                                    todo.done && textStyles.completed
+                                )}
+                            >
+                                {todo.description}
+                            </p>
+                        </CardContent>
+                    )}
+                </div>
+                <CardFooter>
                     <Button
                         variant="ghost"
                         size="icon"
@@ -108,12 +140,10 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Edit Todo</DialogTitle>
-                        <DialogDescription>
-                            Update your task details.
-                        </DialogDescription>
+                        <DialogDescription>Update your task details.</DialogDescription>
                     </DialogHeader>
-                    <CreateTodoForm 
-                        onSubmit={handleEditSubmit} 
+                    <CreateTodoForm
+                        onSubmit={handleEditSubmit}
                         isLoading={isEditing}
                         defaultValues={{
                             title: todo.title,
@@ -129,7 +159,8 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Todo</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete "<strong>{todo.title}</strong>"? This action cannot be undone.
+                            Are you sure you want to delete "<strong>{todo.title}</strong>"?
+                            This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex justify-end gap-2">
