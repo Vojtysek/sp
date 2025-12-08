@@ -11,6 +11,13 @@ interface TodoListProps {
 }
 
 export function TodoList({ user, todos, onToggle, onDelete, onEdit }: TodoListProps) {
+    if (!user.isSignedIn) {
+        return (
+            <div className="text-center text-muted-foreground p-8">
+                Please sign in to view your todos.
+            </div>
+        );
+    }
     if (todos.length === 0) {
         return (
             <div className="text-center text-muted-foreground p-8">
