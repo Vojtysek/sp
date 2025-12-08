@@ -9,7 +9,6 @@ import {
   RedirectToSignIn,
   SignedIn,
   SignedOut,
-  SignIn,
   UserButton,
   useUser,
 } from "@clerk/clerk-react";
