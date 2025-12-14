@@ -8,7 +8,11 @@ export type Todo = {
   id: string;
 };
 
-const API_Base_URL = "https://6935e450fa8e704dafbf2fac.mockapi.io/api/v1";
+const API_Base_URL = import.meta.env.VITE_API_BASE_URL
+
+if (!API_Base_URL) {
+  throw new Error('Missing API Url')
+}
 
 export const todoApi = {
   getAll: async (): Promise<Todo[]> => {
