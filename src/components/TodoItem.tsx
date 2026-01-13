@@ -1,14 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Todo } from "@/api/todoApi";
 import {
     Card,
     CardContent,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -25,7 +23,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Trash2 } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CreateTodoForm } from "@/components/CreateTodoForm";
 
@@ -36,8 +34,9 @@ interface TodoItemProps {
     onEdit?: (
         id: string,
         title: string,
-        description: string,
-        tags: string[]
+        tag: string,
+        description?: string,
+        deadline?: Date
     ) => Promise<void>;
 }
 
@@ -52,6 +51,40 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
+    useEffect(() => {
+        const handleDeleteEvent = () => {
+            setEditOpen(false);
+            setDeleteConfirmOpen(true);
+        };
+        window.addEventListener('deleteTodo', handleDeleteEvent);
+        return () => window.removeEventListener('deleteTodo', handleDeleteEvent);
+    }, []);
+
+    const getDaysUntilDeadline = () => {
+        if (!todo.deadline) return null;
+        const deadline = new Date(todo.deadline);
+        if (deadline.getFullYear() === 1970) return null;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        deadline.setHours(0, 0, 0, 0);
+        const diffTime = deadline.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    };
+
+    const formatDeadline = () => {
+        if (!todo.deadline) return null;
+        const deadline = new Date(todo.deadline);
+        if (deadline.getFullYear() === 1970) return null;
+        return deadline.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+        });
+    };
+
+    const daysUntilDeadline = getDaysUntilDeadline();
+
     const handleDelete = () => {
         onDelete(todo.id);
         setDeleteConfirmOpen(false);
@@ -60,13 +93,14 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
 
     const handleEditSubmit = async (
         title: string,
-        description: string,
-        tags: string[]
+        tag: string,
+        description?: string,
+        deadline?: Date
     ) => {
         if (onEdit) {
             setIsEditing(true);
             try {
-                await onEdit(todo.id, title, description, tags);
+                await onEdit(todo.id, title, tag, description, deadline);
                 setEditOpen(false);
             } catch (error) {
                 console.error(error);
@@ -119,21 +153,48 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
                             </p>
                         </CardContent>
                     )}
+                    {daysUntilDeadline !== null && (
+                        <CardContent className="pt-0">
+                            <div className="flex items-center gap-2">
+                                <Calendar className={cn(
+                                    "h-3.5 w-3.5",
+                                    daysUntilDeadline < 0
+                                        ? "text-destructive"
+                                        : daysUntilDeadline === 0
+                                            ? "text-orange-500"
+                                            : daysUntilDeadline <= 3
+                                                ? "text-yellow-600"
+                                                : "text-muted-foreground"
+                                )} />
+                                <div className="flex flex-col">
+                                    <p className="text-xs text-muted-foreground">
+                                        {formatDeadline()}
+                                    </p>
+                                    <p
+                                        className={cn(
+                                            "text-xs font-medium",
+                                            daysUntilDeadline < 0
+                                                ? "text-destructive"
+                                                : daysUntilDeadline === 0
+                                                    ? "text-orange-500"
+                                                    : daysUntilDeadline <= 3
+                                                        ? "text-yellow-600"
+                                                        : "text-muted-foreground"
+                                        )}
+                                    >
+                                        {daysUntilDeadline < 0
+                                            ? `${Math.abs(daysUntilDeadline)} days overdue`
+                                            : daysUntilDeadline === 0
+                                                ? "Due today"
+                                                : daysUntilDeadline === 1
+                                                    ? "Due tomorrow"
+                                                    : `${daysUntilDeadline} days left`}
+                                    </p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    )}
                 </div>
-                <CardFooter>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteConfirmOpen(true);
-                        }}
-                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                        aria-label="Delete todo"
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
-                </CardFooter>
             </Card>
 
             <Dialog open={editOpen} onOpenChange={setEditOpen}>
@@ -147,8 +208,11 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
                         isLoading={isEditing}
                         defaultValues={{
                             title: todo.title,
+                            tag: todo.tag || "",
                             description: todo.description || "",
-                            tag: todo.tags?.[0] || "",
+                            deadline: todo.deadline ? (() => {
+                                return new Date(todo.deadline).getFullYear() !== 1970 ? new Date(todo.deadline) : undefined;
+                            })() : undefined,
                         }}
                     />
                 </DialogContent>
