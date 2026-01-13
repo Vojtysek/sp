@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Todo } from "@/api/todoApi";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     Dialog,
@@ -56,34 +51,23 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
             setEditOpen(false);
             setDeleteConfirmOpen(true);
         };
-        window.addEventListener('deleteTodo', handleDeleteEvent);
-        return () => window.removeEventListener('deleteTodo', handleDeleteEvent);
+        window.addEventListener("deleteTodo", handleDeleteEvent);
+        return () => window.removeEventListener("deleteTodo", handleDeleteEvent);
     }, []);
 
     const getDaysUntilDeadline = () => {
-        if (!todo.deadline) return null;
-        const deadline = new Date(todo.deadline);
-        if (deadline.getFullYear() === 1970) return null;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        deadline.setHours(0, 0, 0, 0);
-        const diffTime = deadline.getTime() - today.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays;
+        return Math.ceil((new Date(todo.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
     };
 
     const formatDeadline = () => {
-        if (!todo.deadline) return null;
-        const deadline = new Date(todo.deadline);
-        if (deadline.getFullYear() === 1970) return null;
-        return deadline.toLocaleDateString("en-US", {
+        return new Date(todo.deadline).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
             year: "numeric",
         });
     };
 
-    const daysUntilDeadline = getDaysUntilDeadline();
+    const daysUntilDeadline = (new Date(todo.deadline).getFullYear() !== 1970) ? getDaysUntilDeadline() : null;
 
     const handleDelete = () => {
         onDelete(todo.id);
@@ -156,16 +140,18 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
                     {daysUntilDeadline !== null && (
                         <CardContent className="pt-0">
                             <div className="flex items-center gap-2">
-                                <Calendar className={cn(
-                                    "h-3.5 w-3.5",
-                                    daysUntilDeadline < 0
-                                        ? "text-destructive"
-                                        : daysUntilDeadline === 0
-                                            ? "text-orange-500"
-                                            : daysUntilDeadline <= 3
-                                                ? "text-yellow-600"
-                                                : "text-muted-foreground"
-                                )} />
+                                <Calendar
+                                    className={cn(
+                                        "h-3.5 w-3.5",
+                                        daysUntilDeadline < 0
+                                            ? "text-destructive"
+                                            : daysUntilDeadline === 0
+                                                ? "text-orange-500"
+                                                : daysUntilDeadline <= 3
+                                                    ? "text-yellow-600"
+                                                    : "text-muted-foreground"
+                                    )}
+                                />
                                 <div className="flex flex-col">
                                     <p className="text-xs text-muted-foreground">
                                         {formatDeadline()}
@@ -210,9 +196,13 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
                             title: todo.title,
                             tag: todo.tag || "",
                             description: todo.description || "",
-                            deadline: todo.deadline ? (() => {
-                                return new Date(todo.deadline).getFullYear() !== 1970 ? new Date(todo.deadline) : undefined;
-                            })() : undefined,
+                            deadline: todo.deadline
+                                ? (() => {
+                                    return new Date(todo.deadline).getFullYear() !== 1970
+                                        ? new Date(todo.deadline)
+                                        : undefined;
+                                })()
+                                : undefined,
                         }}
                     />
                 </DialogContent>

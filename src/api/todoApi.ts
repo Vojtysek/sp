@@ -6,7 +6,7 @@ export type Todo = {
   title: string;
   tag: string;
   description?: string;
-  deadline?: Date;
+  deadline: Date;
 };
 
 const API_Base_URL = import.meta.env.VITE_API_BASE_URL;
