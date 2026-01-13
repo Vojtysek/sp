@@ -25,6 +25,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
     Popover,
     PopoverContent,
@@ -104,7 +105,7 @@ export function CreateTodoForm({ onSubmit, isLoading, defaultValues }: CreateTod
                         <FormItem>
                             <FormLabel>Description (optional)</FormLabel>
                             <FormControl>
-                                <Input placeholder="Milk, eggs, bread..." {...field} />
+                                <Textarea rows={3} placeholder="Milk, eggs, bread..." {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
