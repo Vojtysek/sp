@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { CreateTodoForm } from "@/components/CreateTodoForm";
 import { Plus } from "lucide-react";
+import type { Tags } from "@/api/todoApi";
 
 interface CreateTodoDialogProps {
   onSubmit: (
