@@ -79,7 +79,7 @@ export function CreateTodoForm({ onSubmit, isLoading, defaultValues }: CreateTod
 
     function handleSubmit(values: z.infer<typeof formSchema>) {
         const deadlineValue = values.deadline || new Date("1970-01-01T00:00:00.000Z");
-        onSubmit(values.title, values.tag || "", values.description || "", deadlineValue);
+        onSubmit(values.title, values.tag as Tags, values.description, deadlineValue);
         form.reset();
     }
 
