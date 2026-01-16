@@ -19,14 +19,14 @@ function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTag, setActiveTag] = useState<Tag>("All");
-  const [completionFilter, setCompletionFilter] = useState<Filter>("all");
+  const [completionFilter, setCompletionFilter] = useState<Filter>("active");
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState<number | null>(null);
   const user = useUser();
 
   const handleTagChange = (tag: Tag) => {
     setActiveTag(tag);
-    setCompletionFilter("all");
+    setCompletionFilter("active");
     setPage(1);
   };
 

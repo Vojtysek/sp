@@ -42,7 +42,7 @@ export function CategoryFilter({
       <DropdownMenu>
         <Button variant="outline" size="sm" asChild>
           <DropdownMenuTrigger>
-            {completionFilter}<MoreHorizontalIcon className="size-4" />
+            {completionFilter || "Active"}<MoreHorizontalIcon className="size-4" />
           </DropdownMenuTrigger>
         </Button>
         <DropdownMenuContent align="end">
