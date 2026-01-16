@@ -11,7 +11,7 @@ import {
 import { FolderOpen, MoreHorizontalIcon } from "lucide-react";
 
 const tags: Tags[] = ["All", "Work", "Personal", "Urgent", "Home", "Shopping"];
-type Filter = "all" | "completed" | "active";
+export type Filter = "all" | "completed" | "active";
 
 export function CategoryFilter({
   activeTag,

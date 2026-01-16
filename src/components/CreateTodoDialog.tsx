@@ -17,7 +17,7 @@ interface CreateTodoDialogProps {
     title: string,
     tag: Tags,
     description?: string,
-    deadline?: Date
+    deadline?: Date | string
   ) => Promise<void>;
 }
 
@@ -29,7 +29,7 @@ export function CreateTodoDialog({ onSubmit }: CreateTodoDialogProps) {
     title: string,
     tag: Tags,
     description?: string,
-    deadline?: Date
+    deadline?: Date | string,
   ) => {
     setIsLoading(true);
     try {
